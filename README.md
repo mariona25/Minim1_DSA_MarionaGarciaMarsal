@@ -37,6 +37,21 @@ El projecte és totalment funcional i compleix els requisits:
 Errors Solucionats
 - Deserialització de dates REST (quan es vol afegir pla de vol via postman): Resolt passant les dates en format ISO 8601 (YYYY-MM-DDTHH:mm:ss.sssZ) via JSON a Postman.
 
+AFEGIT DESPRÉS DEL 05/11/2026 (DIA MÍNIM A CLASSE)
 
+1. DronsManagerTest.java --> He afegit nous tests unitaris JUnit per validar que tots els mètodes escrits en DronManagerImpl funcionen correctament
+- testAddDronAndPilot
+- testGetFlightPlansByDron
+- testGetPilotsByHours
+- testAddFlightPlanSolapamentDron
+- testAddFlightPlanSolapamentPilot
 
+2. DronService.java --> He acabat d'implementar totes les funcionalitats que se'ns demanaven a l'API REST
+- POST /drons: Endpoint per afegir nous drons a la flota.
+- POST /drons/pilots: Endpoint per afegir nous pilots al sistema.
+- GET /drons/plans/drons/{dronId}: Endpoint per obtenir la llista de plans de vol assignats a un dron concret.
+- GET /drons/hores: Endpoint per obtenir el llistat de drons ordenats de major a menor hores de vol.
+- GET /drons/pilots/hores: Endpoint per obtenir el llistat de pilots ordenats de major a menor hores de vol.
+
+3. Comentar codi 
 

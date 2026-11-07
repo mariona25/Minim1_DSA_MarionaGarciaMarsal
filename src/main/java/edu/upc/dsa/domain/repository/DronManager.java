@@ -30,7 +30,7 @@ public interface DronManager {
     // 6. Reparar/manteniment del dron més proper a la porta (LIFO - Pop de la Pila)
     public Dron repararDron() throws Exception;
 
-    // 7. Crear un plan de vol (comprova solapaments i si el dron està en manteniment)
+    // 7. Crear un pla de vol (comprova solapaments i si el dron està en manteniment)
     public FlightPlan addFlightPlan(FlightPlan plan) throws Exception;
 
     // 8. Llistat de plans de vol d'un pilot

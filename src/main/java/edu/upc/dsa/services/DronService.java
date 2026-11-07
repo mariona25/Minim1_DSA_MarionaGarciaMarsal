@@ -122,4 +122,85 @@ public class DronService {
             return Response.status(404).entity(e.getMessage()).build();
         }
     }
+
+    // AFEGIT DESPRÉS DEL 05/11/2026 (DIA MÍNIM CLASSE)
+    // He acabat l'API REST perquè tingui totes les funcionalitats descrites a l'enunciat.
+
+    // 5. POST /drons - Afegir un nou dron
+    @POST
+    @ApiOperation(value = "Afegir un nou dron", notes = "Crea o actualitza un dron a la flota")
+    @ApiResponses(value = {
+            @ApiResponse(code = 201, message = "Dron creat amb èxit", response = Dron.class),
+            @ApiResponse(code = 400, message = "Dades de dron no vàlides")
+    })
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response addDron(Dron dron) {
+        if (dron == null) return Response.status(400).build();
+        Dron d = this.dm.addDron(dron);
+        return Response.status(201).entity(d).build();
+    }
+
+    // 6. POST /drons/pilots - Afegir un nou pilot
+    @POST
+    @ApiOperation(value = "Afegir un nou pilot", notes = "Crea o actualitza un pilot al sistema")
+    @ApiResponses(value = {
+            @ApiResponse(code = 201, message = "Pilot creat amb èxit", response = Pilot.class),
+            @ApiResponse(code = 400, message = "Dades de pilot no vàlides")
+    })
+    @Path("/pilots")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response addPilot(Pilot pilot) {
+        if (pilot == null) return Response.status(400).build();
+        Pilot p = this.dm.addPilot(pilot);
+        return Response.status(201).entity(p).build();
+    }
+
+    // 7. GET /drons/plans/drons/{dronId} - Obtenir plans de vol d'un dron
+    @GET
+    @ApiOperation(value = "Obtenir plans de vol d'un dron", notes = "Retorna la llista de plans de vol assignats a un dron")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Èxit", response = FlightPlan.class, responseContainer = "List"),
+            @ApiResponse(code = 404, message = "Dron no trobat")
+    })
+    @Path("/plans/drons/{dronId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getFlightPlansByDron(@PathParam("dronId") String dronId) {
+        try {
+            List<FlightPlan> plans = this.dm.getFlightPlansByDron(dronId);
+            GenericEntity<List<FlightPlan>> entity = new GenericEntity<List<FlightPlan>>(plans) {};
+            return Response.status(200).entity(entity).build();
+        } catch (Exception e) {
+            return Response.status(404).entity(e.getMessage()).build();
+        }
+    }
+
+    // 8. GET /drons/hores - Llistat de drons ordenats per hores de vol
+    @GET
+    @ApiOperation(value = "Obtenir drons ordenats per hores de vol", notes = "Retorna el llistat de drons ordenats descendentment per hores")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Èxit", response = Dron.class, responseContainer = "List")
+    })
+    @Path("/hores")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getDronsByHours() {
+        List<Dron> drons = this.dm.getDronsByHours();
+        GenericEntity<List<Dron>> entity = new GenericEntity<List<Dron>>(drons) {};
+        return Response.status(200).entity(entity).build();
+    }
+
+    // 9. GET /drons/pilots/hores - Llistat de pilots ordenats per hores de vol
+    @GET
+    @ApiOperation(value = "Obtenir pilots ordenats per hores de vol", notes = "Retorna el llistat de pilots ordenats descendentment per hores")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Èxit", response = Pilot.class, responseContainer = "List")
+    })
+    @Path("/pilots/hores")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getPilotsByHours() {
+        List<Pilot> pilots = this.dm.getPilotsByHours();
+        GenericEntity<List<Pilot>> entity = new GenericEntity<List<Pilot>>(pilots) {};
+        return Response.status(200).entity(entity).build();
+    }
 }

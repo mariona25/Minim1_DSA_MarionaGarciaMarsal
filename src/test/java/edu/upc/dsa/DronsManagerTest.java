@@ -38,7 +38,7 @@ public class DronsManagerTest {
 
     @After
     public void tearDown() {
-        // Nategem dades en acabar proba
+        // Nategem dades en acabar prova
         this.manager.clear();
     }
     @Test
@@ -88,7 +88,6 @@ public class DronsManagerTest {
         Assert.assertEquals(1, this.manager.numDronsMagatzem());
     }
 
-
     // 3. Test per a afegir un pla de vol correctament
     @Test
     public void testAddFlightPlan() throws Exception {
@@ -103,11 +102,11 @@ public class DronsManagerTest {
 
         //Comprobem que FP afegit no és null
         Assert.assertNotNull(afegit);
-        //Les hores de vol del pilo1 i i del dron 1 han de ser 2
+        //Les hores de vol del pilo1 i del dron 1 han de ser 2
         Assert.assertEquals(2.0, d1.getHoresVol(), 0.01);
         Assert.assertEquals(2.0, p1.getHoresVol(), 0.01);
 
-        //En l'historial de plans de vol del dron 1 i el pilot 1 ha d'haver-hi només i pla de vol
+        //En l'historial de plans de vol del dron 1 i el pilot 1 ha d'haver-hi només 1 pla de vol
         List<FlightPlan> plansDron = this.manager.getFlightPlansByDron("D001");
         Assert.assertEquals(1, plansDron.size());
         List<FlightPlan> plansPilot = this.manager.getFlightPlansByPilot("P001");
@@ -140,7 +139,6 @@ public class DronsManagerTest {
         Assert.assertEquals(d3.getId(), dronsOrdenats.get(2).getId());
     }
 
-
     // 5. Test d'error: Intentar afegir un pla de vol a un dron en manteniment
     @Test(expected = Exception.class)
     public void testAddFlightPlanDronEnManteniment() throws Exception {
@@ -151,5 +149,126 @@ public class DronsManagerTest {
         this.manager.addFlightPlan(plan);
     }
 
+    // AFEGIT DESPRÉS DEL 05/11/2026 (DIA MÍNIM CLASSE)
+    // He afegit els tests següents per acabar de validar totes les funcionalitats que ens demana l'enunciat
 
+    // 6. Test per afegir Dron i Pilot
+    @Test
+    public void testAddDronAndPilot() {
+        // Comprobem que podem afegir dron i pilot posant nosaltres ID
+        Dron dNou = this.manager.addDron("D003", "Spark", "DJI", "Mini");
+        Pilot pNou = this.manager.addPilot("P003", "Marc", "Pérez");
+
+        //Ni el pilot ni el dron afegits poden ser nulls
+        Assert.assertNotNull(dNou);
+        Assert.assertNotNull(pNou);
+
+        //Núm drons ha de ser 4 (3 afegits abans i 1 ara)
+        //Núm pilots ha de ser 3 (2 afegits abans i 1 ara)
+        Assert.assertEquals(4, this.manager.numDrons());
+        Assert.assertEquals(3, this.manager.numPilots());
+
+        // Comprobem que podem afegir dron i pilot sense posar nosaltres ID
+        Dron dNou2 = this.manager.addDron("dron2", "DJI2", "Mini2");
+        Pilot pNou2 = this.manager.addPilot("Mariona", "Garcia");
+
+        //Ni el pilot ni el dron afegits poden ser nulls
+        Assert.assertNotNull(dNou2);
+        Assert.assertNotNull(pNou2);
+
+        //Núm drons ha de ser 5 (3 afegits abans i 2 ara)
+        //Núm pilots ha de ser 4 (2 afegits abans i 2 ara)
+        Assert.assertEquals(5, this.manager.numDrons());
+        Assert.assertEquals(4, this.manager.numPilots());
+    }
+
+    // 7. Test per consultar plans de vol per Dron un
+    @Test
+    public void testGetFlightPlansByDron() throws Exception {
+
+        //Afegim pla de bol per un dron
+        Date avui = new Date();
+        FlightPlan plan = new FlightPlan("D001", "P001", avui, 2.0);
+        this.manager.addFlightPlan(plan);
+
+        //Obtenim els FP assignats al dron D001 i al pilot
+        List<FlightPlan> plansDron = this.manager.getFlightPlansByDron("D001");
+        List<FlightPlan> plansPilot = this.manager.getFlightPlansByPilot("P001");
+
+
+        //Comprobem que el nombre de FP assignats al dron i al pilot és 1.
+        Assert.assertNotNull(plansDron);
+        Assert.assertNotNull(plansPilot);
+        Assert.assertEquals(1, plansDron.size());
+        Assert.assertEquals("D001", plansDron.get(0).getDronId());
+        Assert.assertEquals(1, plansPilot.size());
+        Assert.assertEquals("P001", plansPilot.get(0).getPilotId());
+    }
+
+    // 8. Test per consultar pilots ordenats per hores de vol descendentment
+    @Test
+    public void testGetPilotsByHoras() throws Exception {
+        //Creem un 3r pilot
+        Pilot pNou = this.manager.addPilot("P003", "Marc", "Pérez");
+
+        //Creem FP pel pilot p1
+        Date avui = new Date();
+
+        // Pilot1 fa un vol de 5 hores
+        FlightPlan fp1 = new FlightPlan(d1.getId(), p1.getId(), avui, 5.0);
+        this.manager.addFlightPlan(fp1);
+
+        // Pilot2 fa un vol de 4 hores (data més tard per evitar solapaments)
+        Date despres = new Date(avui.getTime() + 10000000);
+        FlightPlan fp2 = new FlightPlan(d2.getId(), p2.getId(), despres, 4.0);
+        this.manager.addFlightPlan(fp2);
+
+        // Pilot3 fa un vol de 1h (data més tard per evitar solapaments)
+        Date despres2 = new Date(avui.getTime() + 50000000);
+        FlightPlan fp3 = new FlightPlan(d2.getId(), pNou.getId(), despres2, 1.0);
+        this.manager.addFlightPlan(fp3);
+
+        //Cridem el mètode que ordena els drons
+        List<Pilot> pilotsOrdenats = this.manager.getPilotsByHours();
+
+        //Ens assegurem que hi ha 3 pilots a la llista
+        Assert.assertEquals(3, pilotsOrdenats.size());
+
+        // El primer ha de ser P1 (5h), seguit de P2 (4h) i finalment P3 (1h)
+        Assert.assertEquals("P001", pilotsOrdenats.get(0).getId());
+        Assert.assertEquals(p2.getId(), pilotsOrdenats.get(1).getId());
+        Assert.assertEquals(pNou.getId(), pilotsOrdenats.get(2).getId());
+    }
+
+    // 9. Test d'error: Intentar afegir un pla de vol que solapa l'horari del DRON
+    @Test(expected = Exception.class)
+    public void testAddFlightPlanSolapamentDron() throws Exception {
+        Date ara = new Date();
+        // Primer vol: D001 amb P001 durant 2 hores (ex. 10:00 a 12:00)
+        FlightPlan fp1 = new FlightPlan("D001", "P001", ara, 2.0);
+        this.manager.addFlightPlan(fp1);
+
+        // Segon vol: MATEIX DRON (D001) amb un altre pilot (p2), començant 1h més tard -> Solapament!
+        Date solapat = new Date(ara.getTime() + 3600000); // +1 hora (11:00 a 13:00)
+        FlightPlan fp2 = new FlightPlan("D001", p2.getId(), solapat, 2.0);
+
+        // Ha de llençar una Exception i no deixar-lo crear
+        this.manager.addFlightPlan(fp2);
+    }
+
+    // 10. Test d'error: Intentar afegir un pla de vol que solapa l'horari del PILOT
+    @Test(expected = Exception.class)
+    public void testAddFlightPlanSolapamentPilot() throws Exception {
+        Date ara = new Date();
+        // Primer vol: P001 amb D001 durant 2 hores
+        FlightPlan fp1 = new FlightPlan("D001", "P001", ara, 2.0);
+        this.manager.addFlightPlan(fp1);
+
+        // Segon vol: MATEIX PILOT (P001) amb un altre dron (D002), començant 30 minuts més tard -> Solapament!
+        Date solapat = new Date(ara.getTime() + 1800000); // +30 minuts
+        FlightPlan fp2 = new FlightPlan("D002", "P001", solapat, 2.0);
+
+        // Ha de llençar una Exception i no deixar-lo crear
+        this.manager.addFlightPlan(fp2);
+    }
 }
