@@ -55,3 +55,5 @@ AFEGIT DESPRÉS DEL 05/11/2026 (DIA MÍNIM A CLASSE)
 
 3. Comentar codi 
 
+4. També he posat les captures de pantalla de totes les proves fetes tant del JUnit test i de l'API REST via Postman en la carpeta public->captures-> postman i test
+
